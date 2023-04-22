@@ -3,8 +3,7 @@ package com.example.pokemons
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.pokemons.data.model.Pokemon
-import com.example.pokemons.data.model.PokemonList
-import com.example.pokemons.data.repository.PokemonRepository
+import com.example.pokemons.storage.remote.repository.PokemonRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +14,7 @@ import javax.inject.Inject
 class PokemonInfoViewModel @Inject constructor(private val pokemonRepository: PokemonRepository): ViewModel() {
 
     private val pokemonList = mutableListOf<Pokemon?>()
-    //val pokemonLiveData = MutableLiveData<PokemonList?>()
+    val pokemonLiveData = MutableLiveData<List<Pokemon?>>()
 
     fun getPokemonList(offset: Int, limit: Int) {
         CoroutineScope(Dispatchers.Default).launch {
@@ -26,6 +25,7 @@ class PokemonInfoViewModel @Inject constructor(private val pokemonRepository: Po
                 pokemon?.let { pokemonList.add(pokemon) }                
             }
             pokemonList.forEach { println(it) }
+            pokemonLiveData.postValue(pokemonList)
         }
     }
 }

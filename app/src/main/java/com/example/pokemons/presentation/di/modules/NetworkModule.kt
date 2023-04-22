@@ -1,6 +1,6 @@
 package com.example.pokemons.presentation.di.modules
 
-import com.example.pokemons.data.service.PokemonService
+import com.example.pokemons.storage.remote.service.PokemonService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

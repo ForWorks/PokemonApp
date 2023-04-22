@@ -1,8 +1,8 @@
-package com.example.pokemons.data.repository
+package com.example.pokemons.storage.remote.repository
 
 import com.example.pokemons.data.model.Pokemon
 import com.example.pokemons.data.model.PokemonList
-import com.example.pokemons.data.service.PokemonService
+import com.example.pokemons.storage.remote.service.PokemonService
 import javax.inject.Inject
 
 class PokemonRepository @Inject constructor(private val pokemonService: PokemonService) {
