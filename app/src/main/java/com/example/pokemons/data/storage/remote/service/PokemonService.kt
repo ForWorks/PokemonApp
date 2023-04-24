@@ -1,4 +1,4 @@
-package com.example.pokemons.storage.remote.service
+package com.example.pokemons.data.storage.remote.service
 
 import com.example.pokemons.data.model.Pokemon
 import com.example.pokemons.data.model.PokemonList

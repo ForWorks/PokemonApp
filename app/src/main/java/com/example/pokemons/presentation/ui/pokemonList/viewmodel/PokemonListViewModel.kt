@@ -4,82 +4,44 @@ import androidx.lifecycle.*
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
-import com.example.pokemons.data.model.Pokemon
-import com.example.pokemons.paging.PokemonPagingSource
-import com.example.pokemons.storage.remote.repository.PokemonRepository
+import com.example.pokemons.data.repository.PokemonRepositoryImpl
+import com.example.pokemons.domain.model.UIPokemon
+import com.example.pokemons.core.paging.PokemonPagingSource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.net.ConnectException
 import javax.inject.Inject
 
 @HiltViewModel
-class PokemonListViewModel @Inject constructor(private val pokemonRepository: PokemonRepository) : ViewModel() {
+class PokemonListViewModel @Inject constructor(private val pokemonRepository: PokemonRepositoryImpl) : ViewModel() {
 
-    val isLoading = MutableLiveData(false)
+    //val isLoading = MutableLiveData(false)
 
     val list = Pager(PagingConfig(1)) {
         PokemonPagingSource(pokemonRepository)
     }.flow.cachedIn(viewModelScope)
 
+    val pokemonList = mutableListOf<UIPokemon?>()
+    val pokemonLiveData = MutableLiveData<List<UIPokemon?>>()
 
+    fun getPokemonList(offset: Int, limit: Int) {
+        try {
+            CoroutineScope(Dispatchers.Default).launch {
+                val page = pokemonRepository.getPokemonList(offset, limit)
+                page?.results?.forEach { result ->
+                    val id = result.url.split("/").dropLast(1).last().toInt()
+                    val pokemon = pokemonRepository.getPokemonById(id)
+                    pokemon?.let { pokemonList.add(pokemon) }
+                }
+                pokemonList.forEach { println(it) }
+                pokemonLiveData.postValue(pokemonList)
+            }
+        }
+        catch (e: ConnectException) {
+            println(e)
+        }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//    private val pokemonList: MutableLiveData<List<Pokemon>> = MutableLiveData(listOf())
-//    private val isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
-//    private val error: MutableLiveData<String?> = MutableLiveData(null)
-//    private var currentItems: Int = 0
-//    private var job: Job? = null
-//
-//    init {
-//        fetchNext()
-//    }
-//
-//    override fun observePokemonList(owner: LifecycleOwner, observer: Observer<List<Pokemon>>) {
-//        pokemonList.observe(owner, observer)
-//    }
-//
-//    override fun observeLoading(owner: LifecycleOwner, observer: Observer<Boolean>) {
-//        isLoading.observe(owner, observer)
-//    }
-//
-//    override fun observeError(owner: LifecycleOwner, observer: Observer<String?>) {
-//        error.observe(owner, observer)
-//    }
-//
-//   // override fun errorExists(): Boolean = error.value!!.isNotEmpty()
-//
-//    override fun fetchNext() {
-////        if (job != null) {
-////            return
-////        }
-////        isLoading.value = true
-////        error.value = null
-////        CoroutineScope(Dispatchers.Default).launch {
-////            val result = pokemonRepository.getPokemonList(currentItems)
-////            result.onSuccess {
-////                currentItems += it.size
-////                pokemons.value = pokemons.value!! + it
-////            }
-////            result.onFailure {
-////                error.value = it.message ?: "Something went wrong"
-////                pokemons.value = pokemons.value
-////            }
-////            isLoading.value = false
-//////            job = null
-////        }
-//    }
+    }
 }

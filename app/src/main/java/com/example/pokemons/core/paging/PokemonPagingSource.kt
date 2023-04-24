@@ -1,19 +1,19 @@
-package com.example.pokemons.paging
+package com.example.pokemons.core.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.pokemons.data.model.Pokemon
-import com.example.pokemons.storage.remote.repository.PokemonRepository
+import com.example.pokemons.data.repository.PokemonRepositoryImpl
+import com.example.pokemons.domain.model.UIPokemon
 import retrofit2.HttpException
 
-class PokemonPagingSource(private val pokemonRepository: PokemonRepository) : PagingSource<Int, Pokemon>() {
+class PokemonPagingSource(private val pokemonRepository: PokemonRepositoryImpl) : PagingSource<Int, UIPokemon>() {
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Pokemon> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, UIPokemon> {
         return try {
             val offset = params.key ?: 0
             val pokemonUrls = pokemonRepository.getPokemonList(offset, 20)?.results
-            val pokemonList = mutableListOf<Pokemon>()
-            val responseData = mutableListOf<Pokemon>()
+            val pokemonList = mutableListOf<UIPokemon>()
+            val responseData = mutableListOf<UIPokemon>()
             pokemonUrls?.forEach {
                 val id = it.url.split("/").dropLast(1).last().toInt()
                 val pokemon = pokemonRepository.getPokemonById(id)
@@ -31,5 +31,5 @@ class PokemonPagingSource(private val pokemonRepository: PokemonRepository) : Pa
         catch (httpException: HttpException) { LoadResult.Error(httpException) }
     }
 
-    override fun getRefreshKey(state: PagingState<Int, Pokemon>): Int? { return null }
+    override fun getRefreshKey(state: PagingState<Int, UIPokemon>): Int? { return null }
 }

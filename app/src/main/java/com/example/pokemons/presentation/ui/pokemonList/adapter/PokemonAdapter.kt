@@ -8,14 +8,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.pokemons.R
-import com.example.pokemons.data.model.Pokemon
-import com.example.pokemons.data.model.PokemonList
 import com.example.pokemons.databinding.PokemonItemBinding
-import retrofit2.Response.error
+import com.example.pokemons.domain.model.UIPokemon
 import javax.inject.Inject
 
+
 class PokemonAdapter @Inject constructor():
-    PagingDataAdapter<Pokemon, PokemonAdapter.ViewHolder>(PokemonDiffItemCallback) {
+    PagingDataAdapter<UIPokemon, PokemonAdapter.ViewHolder>(PokemonDiffItemCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context).inflate(R.layout.pokemon_item, parent, false)
@@ -24,11 +23,10 @@ class PokemonAdapter @Inject constructor():
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         with(holder.binding) {
-           // val pokemon = pokemonList[position]
-            pokemonName.text = getItem(position)?.name
-            Glide.with(root)
-                .load(getItem(position)?.sprites?.front_default)
-                //.listener(holder.listener)
+            val pokemon = getItem(position)
+            pokemonTitle.text = if(!pokemon?.name.isNullOrEmpty()) pokemon?.name else UNDEFINED
+            Glide.with(pokemonImage)
+                .load(pokemon?.sprites)
                 .error(R.drawable.ic_launcher_foreground)
                 .into(pokemonImage)
         }
@@ -37,14 +35,22 @@ class PokemonAdapter @Inject constructor():
     class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         val binding = PokemonItemBinding.bind(itemView)
     }
+
+    private companion object {
+        const val UNDEFINED = "Undefined"
+    }
 }
 
-private object PokemonDiffItemCallback : DiffUtil.ItemCallback<Pokemon>() {
-    override fun areItemsTheSame(oldItem: Pokemon, newItem: Pokemon): Boolean {
+private object PokemonDiffItemCallback : DiffUtil.ItemCallback<UIPokemon>() {
+    override fun areItemsTheSame(oldItem: UIPokemon, newItem: UIPokemon): Boolean {
         return oldItem == newItem
     }
 
-    override fun areContentsTheSame(oldItem: Pokemon, newItem: Pokemon): Boolean {
-        return oldItem.id == newItem.id
+    override fun areContentsTheSame(oldItem: UIPokemon, newItem: UIPokemon): Boolean {
+        return oldItem.name == newItem.name &&
+               oldItem.height == newItem.height &&
+               oldItem.sprites == newItem.sprites &&
+               oldItem.weight == newItem.weight &&
+               oldItem.types == newItem.types
     }
 }
