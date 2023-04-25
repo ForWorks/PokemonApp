@@ -2,34 +2,48 @@ package com.example.pokemons.core.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.pokemons.data.repository.PokemonRepositoryImpl
+import com.example.pokemons.data.model.Pokemon
+import com.example.pokemons.data.repository.local.LocalRepositoryImpl
+import com.example.pokemons.data.repository.remote.RemoteRepositoryImpl
 import com.example.pokemons.domain.model.UIPokemon
 import retrofit2.HttpException
+import javax.inject.Inject
 
-class PokemonPagingSource(private val pokemonRepository: PokemonRepositoryImpl) : PagingSource<Int, UIPokemon>() {
+class PokemonPagingSource @Inject constructor(
+    private val localRepository: LocalRepositoryImpl,
+    private val remoteRepository: RemoteRepositoryImpl,
+) : PagingSource<Int, UIPokemon>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, UIPokemon> {
-        return try {
+      //  return try {
             val offset = params.key ?: 0
-            val pokemonUrls = pokemonRepository.getPokemonList(offset, 20)?.results
-            val pokemonList = mutableListOf<UIPokemon>()
-            val responseData = mutableListOf<UIPokemon>()
-            pokemonUrls?.forEach {
-                val id = it.url.split("/").dropLast(1).last().toInt()
-                val pokemon = pokemonRepository.getPokemonById(id)
-                pokemon?.let { pokemonList.add(pokemon) }
+            val a = localRepository.getPokemonList(offset)
+            val pokemonList = mutableListOf<Pokemon>()
+            if(a.isEmpty()) {
+                val pokemonUrls = remoteRepository.getPokemonList(offset)?.results
+                pokemonUrls?.forEach {
+                    val id = it.url.split(DELIMITER).dropLast(1).last().toInt()
+                    val pokemon = remoteRepository.getPokemonById(id)
+                    pokemon?.let { pokemonList.add(pokemon) }
+                }
+                localRepository.insertPokemonList(pokemonList)
             }
-            responseData.addAll(pokemonList)
-
-            LoadResult.Page(
-                data = responseData,
+            else {
+                pokemonList.addAll(a)
+            }
+            return LoadResult.Page(
+                data = pokemonList.map { it.transform() },
                 prevKey = if(offset == 0) null else -20,
                 nextKey = offset.plus(20),
             )
-        }
-        catch (exception: Exception) { LoadResult.Error(exception) }
-        catch (httpException: HttpException) { LoadResult.Error(httpException) }
+       // }
+        //catch (exception: Exception) { LoadResult.Error(exception) }
+       // catch (httpException: HttpException) { LoadResult.Error(httpException) }
     }
 
     override fun getRefreshKey(state: PagingState<Int, UIPokemon>): Int? { return null }
+
+    private companion object {
+        const val DELIMITER = "/"
+    }
 }

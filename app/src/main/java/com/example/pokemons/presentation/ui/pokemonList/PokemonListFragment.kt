@@ -1,21 +1,18 @@
 package com.example.pokemons.presentation.ui.pokemonList
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
-import com.example.pokemons.R
 import com.example.pokemons.data.network.CheckConnection
 import com.example.pokemons.databinding.FragmentPokemonListBinding
-import com.example.pokemons.presentation.ui.pokemonInfo.PokemonInfoFragmentDirections
 import com.example.pokemons.presentation.ui.pokemonList.adapter.PokemonAdapter
 import com.example.pokemons.presentation.ui.pokemonList.adapter.StateAdapter
 import com.example.pokemons.presentation.ui.pokemonList.viewmodel.PokemonListViewModel
@@ -23,7 +20,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class PokemonListFragment : Fragment() {
@@ -42,6 +38,9 @@ class PokemonListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val actionBar = (activity as AppCompatActivity).supportActionBar
+        actionBar?.setDisplayHomeAsUpEnabled(false)
 
         if(!isInitializedAdapter) {
             pokemonAdapter = PokemonAdapter {

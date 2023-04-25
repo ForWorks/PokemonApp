@@ -1,6 +1,7 @@
 package com.example.pokemons.presentation.di.modules
 
-import com.example.pokemons.data.storage.remote.service.PokemonService
+import com.example.pokemons.data.storage.remote.RemoteService
+import com.example.pokemons.domain.utils.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,7 +31,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(client: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://pokeapi.co/api/v2/")
+            .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()
@@ -38,7 +39,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun providePokemonService(retrofit: Retrofit): PokemonService {
-        return retrofit.create(PokemonService::class.java)
+    fun providePokemonService(retrofit: Retrofit): RemoteService {
+        return retrofit.create(RemoteService::class.java)
     }
 }

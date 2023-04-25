@@ -3,43 +3,25 @@ package com.example.pokemons.presentation.ui.pokemonList.viewmodel
 import androidx.lifecycle.*
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import androidx.paging.cachedIn
-import com.example.pokemons.data.repository.PokemonRepositoryImpl
-import com.example.pokemons.domain.model.UIPokemon
+import com.example.pokemons.data.repository.remote.RemoteRepositoryImpl
 import com.example.pokemons.core.paging.PokemonPagingSource
+import com.example.pokemons.data.model.Pokemon
+import com.example.pokemons.data.repository.local.LocalRepositoryImpl
+import com.example.pokemons.domain.model.UIPokemon
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.net.ConnectException
 import javax.inject.Inject
 
 @HiltViewModel
-class PokemonListViewModel @Inject constructor(private val pokemonRepository: PokemonRepositoryImpl) : ViewModel() {
-
-    //val isLoading = MutableLiveData(false)
+class PokemonListViewModel @Inject constructor(
+    private val localRepository: LocalRepositoryImpl,
+    private val remoteRepository: RemoteRepositoryImpl,
+) : ViewModel() {
 
     val list = Pager(PagingConfig(1)) {
-        PokemonPagingSource(pokemonRepository)
-    }.flow//.cachedIn(viewModelScope)
+        PokemonPagingSource(localRepository, remoteRepository)
+    }.flow
 
-    val pokemonList = mutableListOf<UIPokemon?>()
-    val pokemonLiveData = MutableLiveData<List<UIPokemon?>>()
-
-    fun getPokemonList(offset: Int, limit: Int) {
-        CoroutineScope(Dispatchers.Default).launch {
-            try {
-                val page = pokemonRepository.getPokemonList(offset, limit)
-                page?.results?.forEach { result ->
-                    val id = result.url.split("/").dropLast(1).last().toInt()
-                    val pokemon = pokemonRepository.getPokemonById(id)
-                    pokemon?.let { pokemonList.add(pokemon) }
-                }
-                pokemonList.forEach { println(it) }
-                pokemonLiveData.postValue(pokemonList)
-            } catch (e: Exception) {
-
-            }
-        }
-    }
+//    suspend fun getData(): List<UIPokemon> {
+//        return localRepositoryImpl.getPokemonList(0).map { it.transform() }
+//    }
 }

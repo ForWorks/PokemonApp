@@ -1,13 +1,18 @@
 package com.example.pokemons.data.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.example.pokemons.core.transformation.PokemonTransformable
 import com.example.pokemons.domain.model.UIPokemon
 import com.example.pokemons.domain.model.UIType
 import com.example.pokemons.domain.model.UITypes
+import com.example.pokemons.domain.utils.Constants.POKEMON_ICON_URL
 import com.google.gson.annotations.SerializedName
 
+@Entity(tableName = "pokemon")
 data class Pokemon (
    val height: Int,
+   @PrimaryKey
    val id: Int,
    val name: String,
    val sprites: Sprites,
@@ -18,7 +23,7 @@ data class Pokemon (
         return UIPokemon(
             height = this.height,
             name = this.name,
-            sprites = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${this.id}.png",
+            sprites = String.format(POKEMON_ICON_URL, this.id),
             types = this.types.map {
                 UITypes(
                     slot = it.slot,

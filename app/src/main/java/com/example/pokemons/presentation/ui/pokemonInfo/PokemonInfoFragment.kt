@@ -2,7 +2,6 @@ package com.example.pokemons.presentation.ui.pokemonInfo
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
@@ -12,7 +11,6 @@ import com.bumptech.glide.Glide
 import com.example.pokemons.R
 import com.example.pokemons.databinding.FragmentPokemonInfoBinding
 import dagger.hilt.android.AndroidEntryPoint
-
 
 @AndroidEntryPoint
 class PokemonInfoFragment : Fragment() {
