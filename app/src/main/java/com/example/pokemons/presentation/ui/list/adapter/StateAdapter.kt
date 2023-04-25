@@ -1,4 +1,4 @@
-package com.example.pokemons.presentation.ui.pokemonList.adapter
+package com.example.pokemons.presentation.ui.list.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

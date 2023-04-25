@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/app_back_color"
-    tools:context=".presentation.ui.pokemonList.PokemonListFragment">
+    tools:context=".presentation.ui.list.ListFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/pokemonList"
@@ -19,5 +19,4 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center" />
-
 </FrameLayout>

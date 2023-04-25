@@ -6,9 +6,9 @@
     app:startDestination="@id/pokemonListFragment">
     <fragment
         android:id="@+id/pokemonInfoFragment"
-        android:name="com.example.pokemons.presentation.ui.pokemonInfo.PokemonInfoFragment"
+        android:name="com.example.pokemons.presentation.ui.info.InfoFragment"
         android:label="fragment_pokemon_info"
-        tools:layout="@layout/fragment_pokemon_info" >
+        tools:layout="@layout/fragment_info" >
         <action
             android:id="@+id/infoFragment_to_listFragment"
             app:destination="@id/pokemonListFragment" />
@@ -18,9 +18,9 @@
     </fragment>
     <fragment
         android:id="@+id/pokemonListFragment"
-        android:name="com.example.pokemons.presentation.ui.pokemonList.PokemonListFragment"
+        android:name="com.example.pokemons.presentation.ui.list.ListFragment"
         android:label="fragment_pokemon_list"
-        tools:layout="@layout/fragment_pokemon_list" >
+        tools:layout="@layout/fragment_list" >
         <action
             android:id="@+id/listFragment_to_infoFragment"
             app:destination="@id/pokemonInfoFragment" />

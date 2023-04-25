@@ -6,6 +6,7 @@ import com.example.pokemons.data.model.Pokemon
 import com.example.pokemons.data.repository.local.LocalRepositoryImpl
 import com.example.pokemons.data.repository.remote.RemoteRepositoryImpl
 import com.example.pokemons.domain.model.UIPokemon
+import com.example.pokemons.domain.utils.Constants.PAGE_SIZE
 import retrofit2.HttpException
 import javax.inject.Inject
 
@@ -15,30 +16,31 @@ class PokemonPagingSource @Inject constructor(
 ) : PagingSource<Int, UIPokemon>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, UIPokemon> {
-      //  return try {
-            val offset = params.key ?: 0
-            val a = localRepository.getPokemonList(offset)
-            val pokemonList = mutableListOf<Pokemon>()
-            if(a.isEmpty()) {
+        val offset = params.key ?: 0
+        val localPokemonList = localRepository.getPokemonList(offset)
+        if(localPokemonList.isEmpty()) {
+            return try {
                 val pokemonUrls = remoteRepository.getPokemonList(offset)?.results
                 pokemonUrls?.forEach {
                     val id = it.url.split(DELIMITER).dropLast(1).last().toInt()
                     val pokemon = remoteRepository.getPokemonById(id)
-                    pokemon?.let { pokemonList.add(pokemon) }
+                    pokemon?.let { localPokemonList.add(pokemon) }
                 }
-                localRepository.insertPokemonList(pokemonList)
+                localRepository.insertPokemonList(localPokemonList)
+                getLoadResult(localPokemonList, offset)
             }
-            else {
-                pokemonList.addAll(a)
-            }
-            return LoadResult.Page(
-                data = pokemonList.map { it.transform() },
-                prevKey = if(offset == 0) null else -20,
-                nextKey = offset.plus(20),
-            )
-       // }
-        //catch (exception: Exception) { LoadResult.Error(exception) }
-       // catch (httpException: HttpException) { LoadResult.Error(httpException) }
+            catch (exception: Exception) { LoadResult.Error(exception) }
+            catch (httpException: HttpException) { LoadResult.Error(httpException) }
+        }
+        return getLoadResult(localPokemonList, offset)
+    }
+
+    private fun getLoadResult(pokemonList: List<Pokemon>, offset: Int): LoadResult.Page<Int, UIPokemon> {
+        return LoadResult.Page(
+            data = pokemonList.map { it.transform() },
+            prevKey = if (offset == 0) null else offset - PAGE_SIZE,
+            nextKey = if(pokemonList.size == PAGE_SIZE) offset + PAGE_SIZE else null,
+        )
     }
 
     override fun getRefreshKey(state: PagingState<Int, UIPokemon>): Int? { return null }

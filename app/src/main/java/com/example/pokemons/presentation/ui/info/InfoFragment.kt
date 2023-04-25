@@ -1,4 +1,4 @@
-package com.example.pokemons.presentation.ui.pokemonInfo
+package com.example.pokemons.presentation.ui.info
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,14 +9,14 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.example.pokemons.R
-import com.example.pokemons.databinding.FragmentPokemonInfoBinding
+import com.example.pokemons.databinding.FragmentInfoBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class PokemonInfoFragment : Fragment() {
+class InfoFragment : Fragment() {
 
-    private val binding by lazy { FragmentPokemonInfoBinding.inflate(layoutInflater) }
-    private val args: PokemonInfoFragmentArgs by navArgs()
+    private val binding by lazy { FragmentInfoBinding.inflate(layoutInflater) }
+    private val args: InfoFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return binding.root
