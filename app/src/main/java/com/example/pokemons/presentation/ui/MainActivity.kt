@@ -1,8 +1,9 @@
-package com.example.pokemons
+package com.example.pokemons.presentation.ui
 
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import com.example.pokemons.R
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

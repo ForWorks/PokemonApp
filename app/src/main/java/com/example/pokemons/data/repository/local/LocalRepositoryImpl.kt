@@ -12,6 +12,6 @@ class LocalRepositoryImpl @Inject constructor(private val pokemonDAO: PokemonDAO
     }
 
     override suspend fun insertPokemonList(pokemonList: List<Pokemon>) {
-        return pokemonDAO.insertPokemonList(pokemonList)
+        pokemonDAO.insertPokemonList(pokemonList)
     }
 }

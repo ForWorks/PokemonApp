@@ -15,7 +15,7 @@ class ListViewModel @Inject constructor(
     private val remoteRepository: RemoteRepositoryImpl,
 ) : ViewModel() {
 
-    val list = Pager(PagingConfig(1)) {
+    val pokemonList = Pager(PagingConfig(1)) {
         PokemonPagingSource(localRepository, remoteRepository)
     }.flow
 }

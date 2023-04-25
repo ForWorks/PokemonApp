@@ -70,7 +70,7 @@ class ListFragment : Fragment() {
 
     private fun collectPokemonList() {
         CoroutineScope(Dispatchers.IO).launch {
-            listViewModel.list.collect { pagingData ->
+            listViewModel.pokemonList.collect { pagingData ->
                 pokemonAdapter.submitData(pagingData)
             }
         }
