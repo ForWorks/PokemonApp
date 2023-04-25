@@ -14,23 +14,21 @@ class StateAdapter(private val retry: () -> Unit) : LoadStateAdapter<StateAdapte
 
     override fun onCreateViewHolder(parent: ViewGroup, loadState: LoadState): ViewHolder {
         binding = ErrorFooterBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ViewHolder(retry)
+        return ViewHolder()
     }
 
     override fun onBindViewHolder(holder: ViewHolder, loadState: LoadState) {
         holder.setData(loadState)
     }
 
-    inner class ViewHolder(retry: () -> Unit) : RecyclerView.ViewHolder(binding.root) {
-
-        init { binding.refreshButton.setOnClickListener { retry() } }
-
+    inner class ViewHolder : RecyclerView.ViewHolder(binding.root) {
         fun setData(state: LoadState) {
             binding.apply {
                 loadingBar.isVisible = state is LoadState.Loading
                 errorText.isVisible = state is LoadState.Error
                 refreshButton.isVisible = state is LoadState.Error
             }
+            binding.refreshButton.setOnClickListener { retry() }
         }
     }
 }

@@ -12,8 +12,7 @@ import com.example.pokemons.databinding.PokemonItemBinding
 import com.example.pokemons.domain.model.UIPokemon
 import javax.inject.Inject
 
-
-class PokemonAdapter @Inject constructor():
+class PokemonAdapter @Inject constructor(private val clickListener: (UIPokemon) -> Unit):
     PagingDataAdapter<UIPokemon, PokemonAdapter.ViewHolder>(PokemonDiffItemCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -24,20 +23,19 @@ class PokemonAdapter @Inject constructor():
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         with(holder.binding) {
             val pokemon = getItem(position)
-            pokemonTitle.text = if(!pokemon?.name.isNullOrEmpty()) pokemon?.name else UNDEFINED
-            Glide.with(pokemonImage)
-                .load(pokemon?.sprites)
-                .error(R.drawable.ic_launcher_foreground)
-                .into(pokemonImage)
+            pokemon?.let {
+                pokemonTitle.text = pokemon.name
+                root.setOnClickListener { clickListener(pokemon) }
+                Glide.with(pokemonImage)
+                    .load(pokemon.sprites)
+                    .error(R.drawable.ic_launcher_foreground)
+                    .into(pokemonImage)
+            }
         }
     }
 
     class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         val binding = PokemonItemBinding.bind(itemView)
-    }
-
-    private companion object {
-        const val UNDEFINED = "Undefined"
     }
 }
 

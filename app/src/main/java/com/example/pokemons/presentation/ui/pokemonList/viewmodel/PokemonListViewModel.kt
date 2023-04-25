@@ -21,14 +21,14 @@ class PokemonListViewModel @Inject constructor(private val pokemonRepository: Po
 
     val list = Pager(PagingConfig(1)) {
         PokemonPagingSource(pokemonRepository)
-    }.flow.cachedIn(viewModelScope)
+    }.flow//.cachedIn(viewModelScope)
 
     val pokemonList = mutableListOf<UIPokemon?>()
     val pokemonLiveData = MutableLiveData<List<UIPokemon?>>()
 
     fun getPokemonList(offset: Int, limit: Int) {
-        try {
-            CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScope(Dispatchers.Default).launch {
+            try {
                 val page = pokemonRepository.getPokemonList(offset, limit)
                 page?.results?.forEach { result ->
                     val id = result.url.split("/").dropLast(1).last().toInt()
@@ -37,11 +37,9 @@ class PokemonListViewModel @Inject constructor(private val pokemonRepository: Po
                 }
                 pokemonList.forEach { println(it) }
                 pokemonLiveData.postValue(pokemonList)
+            } catch (e: Exception) {
+
             }
         }
-        catch (e: ConnectException) {
-            println(e)
-        }
-
     }
 }
