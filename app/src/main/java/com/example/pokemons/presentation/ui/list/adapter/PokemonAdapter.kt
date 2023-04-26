@@ -3,6 +3,7 @@ package com.example.pokemons.presentation.ui.list.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.Navigation.findNavController
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -10,9 +11,10 @@ import com.bumptech.glide.Glide
 import com.example.pokemons.R
 import com.example.pokemons.databinding.PokemonItemBinding
 import com.example.pokemons.domain.model.UIPokemon
+import com.example.pokemons.presentation.ui.list.ListFragmentDirections
 import javax.inject.Inject
 
-class PokemonAdapter @Inject constructor(private val clickListener: (UIPokemon) -> Unit):
+class PokemonAdapter @Inject constructor():
     PagingDataAdapter<UIPokemon, PokemonAdapter.ViewHolder>(PokemonDiffItemCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -25,7 +27,10 @@ class PokemonAdapter @Inject constructor(private val clickListener: (UIPokemon) 
             val pokemon = getItem(position)
             pokemon?.let {
                 pokemonTitle.text = pokemon.name
-                root.setOnClickListener { clickListener(pokemon) }
+                root.setOnClickListener {
+                    val action = ListFragmentDirections.listFragmentToInfoFragment(pokemon)
+                    findNavController(root).navigate(action)
+                }
                 Glide.with(pokemonImage)
                     .load(pokemon.sprites)
                     .error(R.drawable.ic_launcher_foreground)

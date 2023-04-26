@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import com.example.pokemons.data.network.CheckConnection
 import com.example.pokemons.databinding.FragmentListBinding
@@ -29,8 +28,8 @@ class ListFragment : Fragment() {
     private val checkConnection by lazy { CheckConnection(requireActivity().application) }
     private val binding by lazy { FragmentListBinding.inflate(layoutInflater) }
     private companion object {
-        lateinit var pokemonAdapter: PokemonAdapter
-        var isInitializedAdapter = false
+        val pokemonAdapter = PokemonAdapter()
+        var isDataCollect = false
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -43,19 +42,18 @@ class ListFragment : Fragment() {
         val actionBar = (activity as AppCompatActivity).supportActionBar
         actionBar?.setDisplayHomeAsUpEnabled(false)
 
-        if(!isInitializedAdapter) {
-            pokemonAdapter = PokemonAdapter {
-                val action = ListFragmentDirections.listFragmentToInfoFragment(it)
-                findNavController().navigate(action)
+        if(!isDataCollect) {
+            lifecycleScope.launchWhenCreated { collectPokemonList() }
+            isDataCollect = true
+        }
+
+        lifecycleScope.launchWhenCreated {
+            pokemonAdapter.loadStateFlow.collect { states ->
+                val state = states.refresh
+                binding.progressBar.isVisible = state is LoadState.Loading
+                if(state is LoadState.Error)
+                    binding.progressBar.visibility = View.VISIBLE
             }
-            lifecycleScope.launchWhenCreated {
-                collectPokemonList()
-                pokemonAdapter.loadStateFlow.collect { states ->
-                    val state = states.refresh
-                    binding.progressBar.isVisible = state is LoadState.Error
-                }
-            }
-            isInitializedAdapter = true
         }
 
         binding.pokemonList.adapter =
